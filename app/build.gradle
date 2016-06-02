@@ -1,0 +1,153 @@
+apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
+
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+ext {
+    versionMajor = 1;
+    versionMinor = 0;
+    versionPatch = 0;
+    versionBuild = 1;
+}
+
+
+def buildNumber() {
+    return "${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}";
+}
+
+def genVersionCode() {
+    return versionBuild;
+}
+
+def genVersionName() {
+    return buildNumber();
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    signingConfigs {
+        production {
+            keyAlias 'child_growth_curve'
+            keyPassword 'child_growth_curve'
+            storeFile file('???.jks')
+            storePassword 'child_growth_curve'
+        }
+    }
+
+    defaultConfig {
+        applicationId "code.watcher.robert.childgrowthcurve"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode genVersionCode()
+        versionName genVersionName()
+    }
+
+    buildTypes {
+        debug {
+            debuggable = true
+            minifyEnabled false
+            ext.enableCrashlytics = false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            ext.enableCrashlytics = true
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+            FileCollection proGuardFileCollection = files { file('./proguard').listFiles() }
+            proguardFiles(proGuardFileCollection)
+
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def file = output.outputFile
+                    output.outputFile = new File(file.parent, file.name.replace(".apk", "-" + genVersionName() + ".apk"))
+                }
+            }
+        }
+    }
+
+    productFlavors {
+        alpha {
+            buildConfigField 'boolean', "IS_DOGFOOD_BUILD", "true"
+            applicationId "com.jj2.j2android"
+            signingConfig signingConfigs.production
+            versionCode genVersionCode()
+            versionName genVersionName() + "-dogfood"
+        }
+        production {
+            buildConfigField 'boolean', "IS_DOGFOOD_BUILD", "false"
+            applicationId "com.jj2.j2android"
+            signingConfig signingConfigs.production
+            versionCode genVersionCode()
+            versionName genVersionName() + "-prod"
+        }
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    dexOptions {
+        jumboMode = true
+        incremental true
+        javaMaxHeapSize "4g"
+    }
+
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+}
+
+dependencies {
+
+    final PLAY_SERVICES_VERSION = '9.0.0'
+    final SUPPORT_LIBRARY_VERSION = '23.4.0'
+    final RETROFIT_VERSION = '2.0.2'
+    final OK_HTTP_VERSION = '3.0.1'
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
+    compile "com.android.support:support-v13:$SUPPORT_LIBRARY_VERSION"
+    compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
+    compile "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
+    compile "com.android.support:cardview-v7:$SUPPORT_LIBRARY_VERSION"
+    compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
+    compile "com.google.android.gms:play-services-base:$PLAY_SERVICES_VERSION"
+    compile "com.google.android.gms:play-services-gcm:$PLAY_SERVICES_VERSION"
+
+    compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
+    compile "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
+    compile "com.squareup.retrofit2:adapter-rxjava:$RETROFIT_VERSION"
+
+    // No more setter & getters
+    provided 'org.projectlombok:lombok:1.16.6'
+
+    compile "com.squareup.okhttp3:logging-interceptor:$OK_HTTP_VERSION"
+    compile "com.squareup.okhttp3:okhttp:$OK_HTTP_VERSION"
+    apply plugin: 'com.google.gms.google-services'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'io.reactivex:rxjava-math:1.0.0'
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'io.reactivex:rxjava:1.1.0'
+    compile 'com.artemzin.rxjava:proguard-rules:1.1.0.0'
+    compile 'com.scottyab:secure-preferences-lib:0.1.2'
+    compile 'com.google.code.gson:gson:2.5'
+    compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'net.danlew:android.joda:2.9.3.1'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
+    compile 'com.github.jkwiecien:EasyImage:1.2.3'
+    compile 'com.avast:android-styled-dialogs:2.3.3'
+    compile 'com.orhanobut:logger:1.4'
+    compile 'com.balysv:material-ripple:1.0.2'
+    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.wdullaer:materialdatetimepicker:2.1.1'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.5'
+}
