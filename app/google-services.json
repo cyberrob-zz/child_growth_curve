@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "452014210476",
+    "project_id": "child-growth-curve"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452014210476:android:29fedba66b268169",
+        "android_client_info": {
+          "package_name": "code.watcher.robert.childgrowthcurve"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpjt6uHnK4kJNpqf4zYhvstq-Mb6PgA0g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
